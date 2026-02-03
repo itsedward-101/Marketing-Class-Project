@@ -1,273 +1,126 @@
 # Marketing-Class-Project
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Netflix Top 10 Longevity Analysis</title>
+# 🍿 Dataflix: Netflix Content Longevity Analysis
 
-<style>
-:root {
-  --red: #e50914;
-  --bg: #0f0f0f;
-  --card: #1a1a1a;
-  --text: #ffffff;
-}
+## 📌 Executive Summary
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: "Inter", system-ui, sans-serif;
-}
+In an era of infinite content and rising production costs, Netflix faces a critical challenge: identifying which titles will *retain audience attention over time*, not just debut strongly.  
+Our team, **Dataflix**, analyzed global Netflix Top 10 rankings to uncover the structural drivers of content longevity.
 
-html {
-  scroll-behavior: smooth;
-}
+Rather than relying solely on early popularity metrics, we examined how **content format**, **language**, and **initial performance** interact to influence how long a title remains in the Top 10.
 
-body {
-  background: var(--bg);
-  color: var(--text);
-  overflow-x: hidden;
-}
+---
 
-/* HERO */
-.hero {
-  height: 100vh;
-  background:
-    linear-gradient(120deg, rgba(0,0,0,.85), rgba(0,0,0,.4)),
-    url("https://images.unsplash.com/photo-1524985069026-dd778a71c7b4")
-    center/cover no-repeat;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  animation: fadeIn 1.5s ease forwards;
-}
+## 🔬 Methodology & Technical Approach
 
-.hero h1 {
-  font-size: 3.5rem;
-  margin-bottom: 1rem;
-  letter-spacing: -1px;
-}
+### 1. Data Source & Preparation
 
-.hero p {
-  font-size: 1.2rem;
-  opacity: 0.85;
-  margin-bottom: 2.5rem;
-}
+We utilized a publicly available **global Netflix Top 10 dataset from Kaggle**, covering weekly rankings across **190+ countries**.
 
-.btn {
-  padding: 14px 36px;
-  background: var(--red);
-  color: white;
-  border-radius: 40px;
-  text-decoration: none;
-  font-weight: 600;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
+**Data Preparation Steps**
+- Cleaned missing and null values in season-level fields
+- Differentiated **Films** vs. **TV Series** based on episode continuity
+- Standardized ranking variables across countries and weeks
 
-.btn:hover {
-  transform: scale(1.08);
-  box-shadow: 0 0 40px rgba(229,9,20,.8);
-}
+**Feature Engineering**
+- `Format`: TV Series vs. Film  
+- `Language`: English vs. Non-English  
+- `Weekly Rank`: Early-stage performance indicator  
+- `Cumulative Weeks`: Total longevity in the Top 10
 
-/* SECTIONS */
-.section {
-  padding: 110px 10%;
-  opacity: 0;
-  transform: translateY(60px);
-  transition: all 1s ease;
-}
+---
 
-.section.show {
-  opacity: 1;
-  transform: translateY(0);
-}
+## 🔬 Statistical Modeling & Inference
 
-.section.dark {
-  background: linear-gradient(180deg, #111, #000);
-}
+To quantify the drivers of content longevity, we employed a **Multiple Linear Regression (MLR)** framework using **Ordinary Least Squares (OLS)**.  
+This approach allows us to isolate the marginal effect of each content attribute while controlling for early performance.
 
-h2 {
-  font-size: 2.4rem;
-  margin-bottom: 50px;
-  text-align: center;
-}
+### 📐 Model Specification
 
-/* CARDS */
-.card-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 32px;
-}
+Our dependent variable is **Longevity**, defined as total weeks a title remains in the Top 10.
 
-.card {
-  background: var(--card);
-  padding: 34px;
-  border-radius: 22px;
-  position: relative;
-  overflow: hidden;
-  transition: transform 0.4s ease;
-}
+Longevityi​=β0​+β1​(WeeklyRanki​)+β2​(TVi​)+β3​(NonEnglishi​)+ϵi​
 
-.card::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(circle at top left, rgba(229,9,20,.35), transparent 60%);
-  opacity: 0;
-  transition: opacity 0.4s ease;
-}
 
-.card:hover::after {
-  opacity: 1;
-}
+**Where:**
+- \(\beta_0\): Baseline longevity  
+- \(WeeklyRank\): Early performance signal  
+- \(TV\): Binary indicator for TV Series  
+- \(NonEnglish\): Binary indicator for non-English content  
+- \(\epsilon\): Unobserved factors
 
-.card:hover {
-  transform: translateY(-14px) scale(1.04);
-}
+---
 
-/* VISUALS */
-.visual-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 32px;
-}
+### 📊 Regression Results
 
-.visual {
-  background: #111;
-  border-radius: 20px;
-  padding: 50px;
-  text-align: center;
-  font-size: 1.1rem;
-  opacity: 0.85;
-  transition: transform 0.4s ease;
-}
+| Variable | Coefficient | Significance | Interpretation |
+|-------|------------|-------------|---------------|
+| **Intercept** | 0.141 | — | Baseline expected longevity |
+| **TV Series** | 2.187 | ✅ Significant | TV shows remain ~2.2 weeks longer than films |
+| **Non-English** | 2.012 | ✅ Significant | Non-English content benefits from global long-tail demand |
+| **Weekly Rank** | 0.091 | Moderate | Higher early rank slightly improves longevity |
 
-.visual:hover {
-  transform: scale(1.06);
-}
+---
 
-/* HEATMAP */
-.heatmap {
-  text-align: center;
-}
+### 📈 Partial Regression Analysis
 
-.heatmap img {
-  width: 100%;
-  max-width: 900px;
-  border-radius: 18px;
-  box-shadow: 0 0 60px rgba(229,9,20,.3);
-  transition: transform 0.4s ease;
-}
+To validate our findings, we employed **Partial Regression Plots**, isolating each predictor’s relationship with longevity while controlling for all others.
 
-.heatmap img:hover {
-  transform: scale(1.04);
-}
+**Key Observations**
+- TV series display a consistently positive slope, confirming episodic retention effects
+- Non-English titles cluster at higher longevity levels, supporting Netflix’s global localization strategy
+- Weekly rank contributes incrementally, but far less than content format or language
 
-/* MODEL */
-code {
-  display: block;
-  background: #111;
-  padding: 26px;
-  border-radius: 16px;
-  font-size: 1.1rem;
-  margin-top: 20px;
-  color: #e5e5e5;
-}
+---
 
-/* TIMELINE */
-.timeline li {
-  margin: 22px 0;
-  padding-left: 22px;
-  border-left: 3px solid var(--red);
-}
+### 🛠 Model Implementation (Python)
 
-/* FOOTER */
-footer {
-  padding: 50px;
-  background: black;
-  text-align: center;
-  font-size: 0.95rem;
-  opacity: 0.85;
-}
+```python
+import statsmodels.api as sm
 
-/* ANIMATIONS */
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-</style>
-</head>
+X = df[['week', 'weekly_rank', 'category_TV', 'language_Non-English']]
+X = sm.add_constant(X)
+y = df['cumulative_weeks_in_top_10']
 
-<body>
+model = sm.OLS(y, X).fit()
+print(model.summary())
+```
+<p align="center"> <img src="https://img.shields.io/badge/Model-OLS_Regression-E50914?style=flat-square" /> <img src="https://img.shields.io/badge/Confidence-95%25-green?style=flat-square" /> </p>
+📊 Key Findings
+🏎️ Drivers of Staying Power
+Factor	Impact	Insight
+TV Series Format	+2.19 weeks	Episodic structure encourages repeat engagement
+Non-English Content	+2.01 weeks	International content benefits from global audience overlap
+Weekly Rank	+0.09	Early popularity helps, but does not dominate
 
-<!-- HERO -->
-<section class="hero">
-  <h1>What Keeps Shows in Netflix’s Top 10?</h1>
-  <p>Data-driven insights on content longevity & global engagement</p>
-  <a href="#insights" class="btn">Explore Insights</a>
-</section>
+Insight:
+Structural attributes (format & language) are stronger predictors of longevity than early ranking alone.
 
-<!-- INSIGHTS -->
-<section class="section dark" id="insights">
-  <h2>Key Insights</h2>
-  <div class="card-grid">
-    <div class="card">📺 TV Shows stay significantly longer than films</div>
-    <div class="card">🌍 Non-English content outperforms expectations</div>
-    <div class="card">📉 Initial rank has limited predictive power</div>
-  </div>
-</section>
+💡 Strategic Recommendations
 
-<!-- HEATMAP -->
-<section class="section">
-  <h2>Engagement Heatmap</h2>
-  <div class="heatmap">
-    <!-- REPLACE src WITH YOUR HEATMAP IMAGE FILE -->
-    <img src="heatmap.png" alt="Netflix Engagement Heatmap">
-    <p style="margin-top:20px; opacity:0.75;">
-      Content engagement patterns across weeks and rankings
-    </p>
-  </div>
-</section>
+Renewal Strategy: A mid-ranked Non-English TV series may outperform a high-ranked English film over time
 
-<!-- MODEL -->
-<section class="section dark">
-  <h2>Regression Model</h2>
-  <code>
-Cumulative Weeks = 0.14 + 0.03·Week + 0.09·Rank
-                 + 2.19·TV + 2.01·NonEnglish
-  </code>
-</section>
+Portfolio Mix: Increase investment in international episodic content to stabilize Top 10 churn
 
-<!-- RECOMMENDATIONS -->
-<section class="section">
-  <h2>Marketing Strategy</h2>
-  <ul class="timeline">
-    <li><strong>Season Accelerator:</strong> Invest early in trending TV shows</li>
-    <li><strong>Global Spotlight:</strong> Promote non-English hits internationally</li>
-    <li><strong>Budget Shift:</strong> Prioritize content strength over release timing</li>
-  </ul>
-</section>
+Global Partnerships: Prioritize creator pipelines in non-English markets to leverage long-tail demand
 
-<footer>
-  Marketing Analytics Project · Edward Dai
-</footer>
+⚠️ Limitations & Future Work
 
-<script>
-const sections = document.querySelectorAll(".section");
-window.addEventListener("scroll", () => {
-  sections.forEach(sec => {
-    if (sec.getBoundingClientRect().top < window.innerHeight - 120) {
-      sec.classList.add("show");
-    }
-  });
-});
-</script>
+Weekly rank is a proxy; future work should incorporate viewership hours
 
-</body>
-</html>
+Marketing spend and social media sentiment were not modeled
+
+Survival analysis could provide deeper time-to-exit insights
+
+👥 Team
+
+Edward Dai
+
+Meghna Preme
+
+Prakash Chinpattanakul
+
+Alex Huang
+
+Srinidhi Chevvuri
 
